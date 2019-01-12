@@ -41,7 +41,11 @@ def main():
     # commented block is for 3.7
     # with SimpleXMLRPCServer(('localhost', 8000),
     #                         requestHandler=RequestHandler) as server:
-    server = SimpleXMLRPCServer((HOST, PORT), requestHandler=RequestHandler)
+    server = SimpleXMLRPCServer(
+        (HOST, PORT),
+        requestHandler=RequestHandler,
+        allow_none=True,
+    )
     server.register_introspection_functions()
     server.register_instance(GoPiGoController())
 
