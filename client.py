@@ -3,8 +3,12 @@ import xmlrpc.client
 from curses import wrapper
 
 
+HOST = 'dex.local'
+PORT = 8777
+
+
 def main():
-    s = xmlrpc.client.ServerProxy('http://localhost:8000')
+    s = xmlrpc.client.ServerProxy('http://{host}:{port}'.format(host=HOST, port=PORT))
     # print(s.system.listMethods())
     stdscr = curses.initscr()
     # do not echo keys to the screen
