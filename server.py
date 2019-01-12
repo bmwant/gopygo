@@ -21,19 +21,18 @@ class GoPiGoController(object):
 
     def forward(self):
         self.gpg.forward()
-        time.sleep(1)
-        self.gpg.stop()
 
     def backward(self):
         self.gpg.backward()
-        time.sleep(1)
-        self.gpg.stop()
 
     def left(self):
         self.gpg.turn_degrees(-90)
 
     def right(self):
         self.gpg.turn_degrees(90)
+
+    def stop(self):
+        self.gpg.stop()
 
 
 def main():
