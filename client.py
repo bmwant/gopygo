@@ -37,7 +37,7 @@ class Application(tk.Frame):
         self.master.bind('<KeyRelease-w>', partial(self.wrap_event, self.s.stop))
         self.master.bind('<KeyRelease-s>', partial(self.wrap_event, self.s.stop))
         self.master.bind('<KeyPress-a>', partial(self.wrap_event, self.s.left))
-        self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.left))
+        self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.right))
 
     def wrap_event(self, function, event):
         print(event)
