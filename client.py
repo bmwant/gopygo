@@ -1,5 +1,7 @@
+import os
 import curses
 import xmlrpc.client
+import tkinter as tk
 from curses import wrapper
 from functools import partial
 
@@ -7,16 +9,39 @@ from functools import partial
 HOST = 'dex.local'
 PORT = 8777
 
-from Tkinter import *
 
-master = Tk()
-master.wm_title('GoPiGo3')
+class Application(tk.Frame):
+    def __init__(self, s, master=None):
+        super().__init__(master)
+        os.system('xset r off')
+        self.s = s
+        self.master = master
+        self.master.geometry('300x200')
+        self.master.resizable(0, 0)
+        self.pack()
+        self.master.title('GoPiGo Controls')
+        self.create_widgets()
+        self.bind_controls()
 
-width = 1000
-height = 600
-circle = [width / 2, height / 2, width / 2 + 50, height / 2 + 50]
+    def __del__(self):
+        os.system('xset r on')
 
-canvas = Canvas(master, width=width, height=height, bg="White")
+    def create_widgets(self):
+        self.quit = tk.Button(self, text='exit',
+                              command=self.master.destroy)
+        self.quit.pack(side='bottom')
+
+    def bind_controls(self):
+        self.master.bind('<KeyPress-w>', partial(self.wrap_event, self.s.forward))
+        self.master.bind('<KeyPress-s>', partial(self.wrap_event, self.s.backward))
+        self.master.bind('<KeyRelease-w>', partial(self.wrap_event, self.s.stop))
+        self.master.bind('<KeyRelease-s>', partial(self.wrap_event, self.s.stop))
+        self.master.bind('<KeyPress-a>', partial(self.wrap_event, self.s.left))
+        self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.left))
+
+    def wrap_event(self, function, event):
+        print(event)
+        function()
 
 
 def print_top(stdscr, message):
@@ -25,7 +50,17 @@ def print_top(stdscr, message):
     stdscr.refresh()
 
 
-def main(stdscr, *args, **kwargs):
+def main():
+    s = xmlrpc.client.ServerProxy('http://{host}:{port}'.format(host=HOST, port=PORT))
+    root = tk.Tk()
+    app = Application(s=s, master=root)
+    try:
+        app.mainloop()
+    finally:
+        del app
+
+
+def main_curses(stdscr, *args, **kwargs):
     s = xmlrpc.client.ServerProxy('http://{host}:{port}'.format(host=HOST, port=PORT))
     # print(s.system.listMethods())
     # stdscr = curses.initscr()
@@ -35,9 +70,6 @@ def main(stdscr, *args, **kwargs):
     curses.cbreak()
     print_ = partial(print_top, stdscr)
     print_('Use w/a/s/d keys to navigate your robot')
-
-    canvas.bind('<KeyRelease-w>', s.stop)
-    canvas.bind('<KeyRelease-s>', s.stop)
 
     try:
         while True:
@@ -64,4 +96,5 @@ def main(stdscr, *args, **kwargs):
 
 
 if __name__ == '__main__':
-    wrapper(main)
+    # wrapper(main_curses)
+    main()
