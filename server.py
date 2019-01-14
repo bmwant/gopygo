@@ -34,6 +34,9 @@ class GoPiGoController(object):
     def stop(self):
         self.gpg.stop()
 
+    def set_speed(self, value):
+        self.gpg.set_speed(value)
+
 
 def main():
     # Create server

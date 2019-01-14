@@ -27,6 +27,10 @@ class Application(tk.Frame):
         os.system('xset r on')
 
     def create_widgets(self):
+        w2 = tk.Scale(self.master, from_=0, to=400,
+                      tickinterval=50, length=300, orient=tk.HORIZONTAL, command=self.set_speed)
+        w2.set(50)
+        w2.pack(side='top')
         self.quit = tk.Button(self, text='exit',
                               command=self.master.destroy)
         self.quit.pack(side='bottom')
@@ -42,6 +46,9 @@ class Application(tk.Frame):
     def wrap_event(self, function, event):
         print(event)
         function()
+
+    def set_speed(self, value):
+        self.s.set_speed(value)
 
 
 def print_top(stdscr, message):
