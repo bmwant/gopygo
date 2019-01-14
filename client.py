@@ -27,9 +27,9 @@ class Application(tk.Frame):
         os.system('xset r on')
 
     def create_widgets(self):
-        w2 = tk.Scale(self.master, from_=0, to=400,
-                      tickinterval=50, length=300, orient=tk.HORIZONTAL, command=self.set_speed)
-        w2.set(50)
+        w2 = tk.Scale(self.master, from_=0, to=500,
+                      tickinterval=100, length=300, orient=tk.HORIZONTAL, command=self.set_speed)
+        w2.set(300)  # default speed
         w2.pack(side='top')
         self.quit = tk.Button(self, text='exit',
                               command=self.master.destroy)
@@ -48,6 +48,7 @@ class Application(tk.Frame):
         function()
 
     def set_speed(self, value):
+        # todo: do not set each value, update each 50?
         self.s.set_speed(value)
 
 
