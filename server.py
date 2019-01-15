@@ -16,7 +16,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
 HOST = '0.0.0.0'
 PORT = 8777
-FLASH_DELAY = 0.2
+FLASH_DELAY = 0.1
 
 
 class GoPiGoController(object):
@@ -26,10 +26,13 @@ class GoPiGoController(object):
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.executor.submit(self.flash_lights)
 
-    def __del__(self):
+    def cleanup(self):
         print('Cleaning up...')
         self.executor.shutdown(wait=False)
         self.stop_flash()
+
+    def __del__(self):
+        self.cleanup()
 
     def forward(self):
         self.gpg.forward()
@@ -107,6 +110,8 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         print("\nKeyboard interrupt received, exiting.")
+        server.shutdown()
+        controller.cleanup()
         sys.exit(0)
     finally:
         del controller
