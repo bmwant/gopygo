@@ -22,10 +22,13 @@ class GoPiGoController(object):
         self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
         self.flashing = False
         self.launch_executor()  # flash LEDs in the background
+        print('Initialized')
 
     def launch_executor(self):
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        print('Launching')
+        with ThreadPoolExecutor(max_workers=2) as executor:
             executor.submit(self.flash_lights)
+        print('Should be non-blocking')
 
     def forward(self):
         self.gpg.forward()
@@ -51,6 +54,7 @@ class GoPiGoController(object):
                 self.gpg.open_left_eye()
                 time.sleep(FLASH_DELAY)
                 self.gpg.close_left_eye()
+            print('In a infinite loop')
             time.sleep(FLASH_DELAY)
 
     def start_flash(self):
