@@ -22,7 +22,8 @@ class Application(tk.Frame):
         self.master.title('GoPiGo Controls')
         self.create_widgets()
         self.bind_controls()
-        self.flashing = False
+        self._flashing = False
+        self._lights = False
 
     def __del__(self):
         os.system('xset r on')
@@ -43,6 +44,7 @@ class Application(tk.Frame):
         self.master.bind('<KeyRelease-s>', partial(self.wrap_event, self.s.stop))
         self.master.bind('<KeyPress-a>', partial(self.wrap_event, self.s.left))
         self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.right))
+        self.master.bind('<KeyPress-k>', self.flash)
         self.master.bind('<KeyPress-l>', self.flash)
 
     def wrap_event(self, function, event):
@@ -54,15 +56,26 @@ class Application(tk.Frame):
         self.s.set_speed(value)
 
     def flash(self, event):
-        if self.flashing:
-            self.flashing = False
+        if self._flashing:
+            self._flashing = False
             self.s.stop_flash()
             print('Stop flashing')
             return
 
         self.s.start_flash()
         print('Start flashing')
-        self.flashing = True
+        self._flashing = True
+
+    def lights(self, event):
+        if self._lights:
+            self._lights = False
+            self.s.turn_lights_off()
+            print('Lights is off')
+            return
+
+        self.s.turn_lights_on()
+        print('Lights is on')
+        self._lights = True
 
 
 def print_top(stdscr, message):

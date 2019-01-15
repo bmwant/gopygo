@@ -25,6 +25,7 @@ class GoPiGoController(object):
         self.executor.submit(self.flash_lights)
 
     def __del__(self):
+        print('Cleaning up...')
         self.executor.shutdown(wait=False)
         self.stop_flash()
 
@@ -52,7 +53,6 @@ class GoPiGoController(object):
                 self.gpg.open_left_eye()
                 time.sleep(FLASH_DELAY)
                 self.gpg.close_left_eye()
-            print('In a infinite loop')
             time.sleep(FLASH_DELAY)
 
     def start_flash(self):
