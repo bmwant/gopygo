@@ -22,7 +22,7 @@ class Application(tk.Frame):
         self.master.title('GoPiGo Controls')
         self.create_widgets()
         self.bind_controls()
-        self.flashing = True
+        self.flashing = False
 
     def __del__(self):
         os.system('xset r on')
