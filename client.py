@@ -57,9 +57,11 @@ class Application(tk.Frame):
         if self.flashing:
             self.flashing = False
             self.s.stop_flash()
+            print('Stop flashing')
             return
 
         self.s.start_flash()
+        print('Start flashing')
         self.flashing = True
 
 

@@ -14,6 +14,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
 HOST = '0.0.0.0'
 PORT = 8777
+FLASH_DELAY = 0.2
 
 
 class GoPiGoController(object):
@@ -45,11 +46,12 @@ class GoPiGoController(object):
         self.gpg.set_speed(value)
 
     def flash_lights(self):
-        while self.flashing:
-            self.gpg.open_left_eye()
-            time.sleep(0.2)
-            self.gpg.close_left_eye()
-            time.sleep(0.2)
+        while True:
+            if self.flashing:
+                self.gpg.open_left_eye()
+                time.sleep(FLASH_DELAY)
+                self.gpg.close_left_eye()
+            time.sleep(FLASH_DELAY)
 
     def start_flash(self):
         self.flashing = True
