@@ -56,6 +56,10 @@ class Application(tk.Frame):
         self.s.set_speed(value)
 
     def flash(self, event):
+        if self._lights:
+            print('Cannot flash when lights is on!')
+            return
+
         if self._flashing:
             self._flashing = False
             self.s.stop_flash()
@@ -67,6 +71,10 @@ class Application(tk.Frame):
         self._flashing = True
 
     def lights(self, event):
+        if self._flashing:
+            print('Cannot turn lights on when flashing!')
+            return
+
         if self._lights:
             self._lights = False
             self.s.turn_lights_off()
