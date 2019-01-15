@@ -21,14 +21,12 @@ class GoPiGoController(object):
     def __init__(self):
         self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
         self.flashing = False
-        self.launch_executor()  # flash LEDs in the background
-        print('Initialized')
+        self.executor = ThreadPoolExecutor(max_workers=1)
+        self.executor.submit(self.flash_lights)
 
-    def launch_executor(self):
-        print('Launching')
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            executor.submit(self.flash_lights)
-        print('Should be non-blocking')
+    def __del__(self):
+        self.executor.shutdown(wait=False)
+        self.stop_flash()
 
     def forward(self):
         self.gpg.forward()
@@ -86,7 +84,8 @@ def main():
         allow_none=True,
     )
     server.register_introspection_functions()
-    server.register_instance(GoPiGoController())
+    controller = GoPiGoController()
+    server.register_instance(controller)
 
     # Run the server's main loop
     print('Serving XML-RPC on {host}:{port}'.format(host=HOST, port=PORT))
@@ -95,6 +94,8 @@ def main():
     except KeyboardInterrupt:
         print("\nKeyboard interrupt received, exiting.")
         sys.exit(0)
+    finally:
+        del controller
 
 
 if __name__ == '__main__':
