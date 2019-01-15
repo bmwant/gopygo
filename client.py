@@ -45,7 +45,7 @@ class Application(tk.Frame):
         self.master.bind('<KeyPress-a>', partial(self.wrap_event, self.s.left))
         self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.right))
         self.master.bind('<KeyPress-k>', self.flash)
-        self.master.bind('<KeyPress-l>', self.flash)
+        self.master.bind('<KeyPress-l>', self.lights)
 
     def wrap_event(self, function, event):
         print(event)

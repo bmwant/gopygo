@@ -1,8 +1,10 @@
 import sys
 import time
+import random
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 
 from easygopigo3 import EasyGoPiGo3  # importing the EasyGoPiGo3 class
 
@@ -48,19 +50,31 @@ class GoPiGoController(object):
         self.gpg.set_speed(value)
 
     def flash_lights(self):
+        gpg = self.gpg
+        led_triggers = (
+            (gpg.open_left_eye, gpg.close_left_eye),
+            (gpg.open_right_eye, gpg.close_right_eye),
+            (partial(gpg.blinker_on, 0), partial(gpg.blinker_off, 0)),
+            (partial(gpg.blinker_on, 1), partial(gpg.blinker_off, 1)),
+        )
+        leds = len(led_triggers)
+        flags = [False] * leds
         while True:
             if self.flashing:
-                self.gpg.open_left_eye()
+                led = random.randrange(0, leds)
+                action = not flags[led]
+                flags[led] = action
+                led_triggers[led][action]()
                 time.sleep(FLASH_DELAY)
-                self.gpg.close_left_eye()
-            time.sleep(FLASH_DELAY)
+            else:
+                time.sleep(1)
 
     def start_flash(self):
         self.flashing = True
 
     def stop_flash(self):
         self.flashing = False
-        self.gpg.close_eyes()
+        self.turn_lights_off()
 
     def turn_lights_on(self):
         self.gpg.open_eyes()
