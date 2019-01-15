@@ -54,7 +54,13 @@ class Application(tk.Frame):
         self.s.set_speed(value)
 
     def flash(self, event):
-        self.s.stop_flash()
+        if self.flashing:
+            self.flashing = False
+            self.s.stop_flash()
+            return
+
+        self.s.start_flash()
+        self.flashing = True
 
 
 def print_top(stdscr, message):

@@ -2,6 +2,7 @@ import sys
 import time
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
+from concurrent.futures import ThreadPoolExecutor
 
 from easygopigo3 import EasyGoPiGo3  # importing the EasyGoPiGo3 class
 
@@ -19,6 +20,11 @@ class GoPiGoController(object):
     def __init__(self):
         self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
         self.flashing = False
+        self.launch_executor()  # flash LEDs in the background
+
+    def launch_executor(self):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.submit(self.flash_lights)
 
     def forward(self):
         self.gpg.forward()
@@ -39,12 +45,14 @@ class GoPiGoController(object):
         self.gpg.set_speed(value)
 
     def flash_lights(self):
-        self.flashing = True
         while self.flashing:
             self.gpg.open_left_eye()
             time.sleep(0.2)
             self.gpg.close_left_eye()
-            time.sleep(0.1)
+            time.sleep(0.2)
+
+    def start_flash(self):
+        self.flashing = True
 
     def stop_flash(self):
         self.flashing = False
@@ -57,8 +65,8 @@ class GoPiGoController(object):
 
     def turn_lights_off(self):
         self.gpg.close_eyes()
-        self.gpg.blinker_on(0)
-        self.gpg.blinker_on(1)
+        self.gpg.blinker_off(0)
+        self.gpg.blinker_off(1)
 
 
 def main():
