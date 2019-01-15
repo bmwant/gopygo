@@ -48,6 +48,7 @@ class GoPiGoController(object):
 
     def stop_flash(self):
         self.flashing = False
+        self.gpg.close_eyes()
 
     def turn_lights_on(self):
         self.gpg.open_eyes()

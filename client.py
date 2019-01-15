@@ -22,7 +22,7 @@ class Application(tk.Frame):
         self.master.title('GoPiGo Controls')
         self.create_widgets()
         self.bind_controls()
-        self.flashing = False
+        self.flashing = True
 
     def __del__(self):
         os.system('xset r on')
@@ -54,13 +54,7 @@ class Application(tk.Frame):
         self.s.set_speed(value)
 
     def flash(self, event):
-        if self.flashing:
-            self.s.stop_flash()
-            self.flashing = False
-            return
-
-        self.s.flash_lights()
-        self.flashing = True
+        self.s.stop_flash()
 
 
 def print_top(stdscr, message):
