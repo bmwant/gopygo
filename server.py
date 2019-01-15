@@ -39,6 +39,7 @@ class GoPiGoController(object):
         self.gpg.set_speed(value)
 
     def flash_lights(self):
+        self.flashing = True
         while self.flashing:
             self.gpg.open_left_eye()
             time.sleep(0.2)
