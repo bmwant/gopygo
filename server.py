@@ -18,6 +18,7 @@ PORT = 8777
 class GoPiGoController(object):
     def __init__(self):
         self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
+        self.flashing = False
 
     def forward(self):
         self.gpg.forward()
@@ -36,6 +37,26 @@ class GoPiGoController(object):
 
     def set_speed(self, value):
         self.gpg.set_speed(value)
+
+    def flash_lights(self):
+        while self.flashing:
+            self.gpg.open_left_eye()
+            time.sleep(0.2)
+            self.gpg.close_left_eye()
+            time.sleep(0.1)
+
+    def stop_flash(self):
+        self.flashing = False
+
+    def turn_lights_on(self):
+        self.gpg.open_eyes()
+        self.gpg.blinker_on(0)
+        self.gpg.blinker_on(1)
+
+    def turn_lights_off(self):
+        self.gpg.close_eyes()
+        self.gpg.blinker_on(0)
+        self.gpg.blinker_on(1)
 
 
 def main():
