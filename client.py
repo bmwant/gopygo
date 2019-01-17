@@ -27,6 +27,7 @@ class Application(tk.Frame):
 
     def __del__(self):
         os.system('xset r on')
+        self.s('close')
 
     def create_widgets(self):
         w2 = tk.Scale(self.master, from_=0, to=500,
@@ -44,7 +45,7 @@ class Application(tk.Frame):
         self.master.bind('<KeyRelease-s>', partial(self.wrap_event, self.s.stop))
         self.master.bind('<KeyPress-a>', partial(self.wrap_event, self.s.left))
         self.master.bind('<KeyPress-d>', partial(self.wrap_event, self.s.right))
-        self.master.bind('<KeyPress-k>', self.flash)
+        self.master.bind('<space>', self.flash)
         self.master.bind('<KeyPress-l>', self.lights)
 
     def wrap_event(self, function, event):
