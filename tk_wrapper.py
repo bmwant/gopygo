@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+from functools import partial
 
 
 class TkControlWrapper(tk.Frame):
@@ -30,11 +31,15 @@ class TkControlWrapper(tk.Frame):
         self.quit.pack(side='bottom')
 
     def bind_controls(self):
-        self.master.bind('<KeyPress-w>', self.c.forward)
-        self.master.bind('<KeyPress-s>', self.c.backward)
-        self.master.bind('<KeyRelease-w>', self.c.stop)
-        self.master.bind('<KeyRelease-s>', self.c.stop)
-        self.master.bind('<KeyPress-a>', self.c.left)
-        self.master.bind('<KeyPress-d>', self.c.right)
-        self.master.bind('<space>', self.c.flash)
-        self.master.bind('<KeyPress-l>', self.c.lights)
+        self.master.bind('<KeyPress-w>',    partial(self.wrap_event, self.c.forward))
+        self.master.bind('<KeyPress-s>',    partial(self.wrap_event, self.c.backward))
+        self.master.bind('<KeyRelease-w>',  partial(self.wrap_event, self.c.stop))
+        self.master.bind('<KeyRelease-s>',  partial(self.wrap_event, self.c.stop))
+        self.master.bind('<KeyPress-a>',    partial(self.wrap_event, self.c.left))
+        self.master.bind('<KeyPress-d>',    partial(self.wrap_event, self.c.right))
+        self.master.bind('<space>',         partial(self.wrap_event, self.c.flash))
+        self.master.bind('<KeyPress-l>',    partial(self.wrap_event, self.c.lights))
+
+    def wrap_event(self, function, event):
+        print(event)
+        function()

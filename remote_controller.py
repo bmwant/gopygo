@@ -17,7 +17,14 @@ class Controller(object):
         self._flashing = False
         self._lights = False
 
-    def flash(self, event):
+    def __getattr__(self, item):
+        if item not in self.__dict__ and item in self.COMMANDS:
+            command = getattr(self.s, item)
+            command()
+
+        raise AttributeError("No such attribute '%s'" % item)
+
+    def flash(self):
         if self._lights:
             print('Cannot flash when lights is on!')
             return
@@ -32,7 +39,7 @@ class Controller(object):
         print('Start flashing')
         self._flashing = True
 
-    def lights(self, event):
+    def lights(self):
         if self._flashing:
             print('Cannot turn lights on when flashing!')
             return
@@ -47,15 +54,13 @@ class Controller(object):
         print('Lights is on')
         self._lights = True
 
-        artial(self.wrap_event, self.s.right)
-
     def set_speed(self, value):
         # todo: do not set each value, update each 50?
         self.s.set_speed(value)
 
-    def wrap_event(self, function, event):
-        print(event)
-        function()
-
     def close(self):
         self.s('close')
+
+
+if __name__ == '__main__':
+    pass
