@@ -29,6 +29,7 @@ class GoPiGoController(object):
     def cleanup(self):
         print('Cleaning up...')
         self.executor.shutdown(wait=False)
+        self.stop()
         self.stop_flash()
 
     def __del__(self):

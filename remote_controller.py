@@ -20,7 +20,7 @@ class Controller(object):
     def __getattr__(self, item):
         if item not in self.__dict__ and item in self.COMMANDS:
             command = getattr(self.s, item)
-            command()
+            return command
 
         raise AttributeError("No such attribute '%s'" % item)
 
