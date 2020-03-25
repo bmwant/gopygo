@@ -17,17 +17,19 @@
 # 3         program is not running
 # 4         program or service status is unknown
 
+USER=pi
 PIDFILE=/var/run/rpcserver.pid
-PROG=/home/pi/workspace/gopygo/server.py
+EXEC=/usr/bin/python3
+SCRIPT=/home/pi/workspace/gopygo/server.py
 LOGS=/var/log/rpcserver.log
 
-if [ -f "${PROG}" ]; then
+if [ -f "${SCRIPT}" ]; then
   case "$1" in
     status)
       if [ -f "${PIDFILE}" ]; then
         PID=`cat $PIDFILE`
         if ps -p $PID > /dev/null; then
-          TIME=$(ps -o etime= -p $PIDFILE)
+          TIME=$(ps -o etime= -p $PID)
           echo "Running for $TIME"
         else
           echo "Server is not running, check logs at $LOGS"
@@ -38,7 +40,7 @@ if [ -f "${PROG}" ]; then
       ;;
     stop)
       echo "Stopping a server..."
-      start-stop-daemon --stop --pid $PIDFILE
+      start-stop-daemon --stop --pidfile $PIDFILE --remove-pidfile
       # RETVAL="$?"
       # [ "$RETVAL" = 2 ] && return 2
       ;;
@@ -47,9 +49,9 @@ if [ -f "${PROG}" ]; then
       ;;
     start)
       echo "Starting a server..."
-      start-stop-daemon --start --chuid pi --background \
+      start-stop-daemon --start --chuid $USER --background \
         --make-pidfile --pidfile $PIDFILE \
-        --exec /usr/bin/python3 $PROG  >$LOGS 2>&1
+        --startas /bin/bash -- -c "exec $EXEC $SCRIPT > $LOGS 2>&1"
       ;;
     *)
       echo 'Usage: /etc/init.d/rpc-server {start|restart|stop|status}'
