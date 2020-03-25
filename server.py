@@ -1,17 +1,39 @@
 import sys
 import time
 import random
+from http import HTTPStatus
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import MagicMock
 from functools import partial
 
 from easygopigo3 import EasyGoPiGo3  # importing the EasyGoPiGo3 class
 
 
-# Restrict to a particular path.
-class RequestHandler(SimpleXMLRPCRequestHandler):
+uprint = partial(print, flush=True)
+
+
+class SingleClientRequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
+
+    _client = None
+
+    def handle(self):
+        client_host, client_port = self.client_address
+        if self.check_client(client_host):
+            super().handle()
+        else:
+            self.send_error(
+                HTTPStatus.TOO_MANY_REQUESTS,
+                'Only single client is supported'
+            )
+
+    def check_client(self, host):
+        if self._client is None:
+            self._client = host
+
+        return host == self._client
 
 
 HOST = '0.0.0.0'
@@ -20,14 +42,18 @@ FLASH_DELAY = 0.1
 
 
 class GoPiGoController(object):
-    def __init__(self):
-        self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
+    def __init__(self, mock_controls=False):
+        if mock_controls:
+            self.gpg = MagicMock()
+        else:
+            self.gpg = EasyGoPiGo3()  # instantiating a EasyGoPiGo3 object
+        self.gpg = MagicMock()  # instantiating a EasyGoPiGo3 object
         self.flashing = False
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.executor.submit(self.flash_lights)
 
     def cleanup(self):
-        print('Cleaning up...')
+        uprint('Cleaning up...')
         self.executor.shutdown(wait=False)
         self.stop()
         self.stop_flash()
@@ -98,7 +124,7 @@ def main():
     #                         requestHandler=RequestHandler) as server:
     server = SimpleXMLRPCServer(
         (HOST, PORT),
-        requestHandler=RequestHandler,
+        requestHandler=SingleClientRequestHandler,
         allow_none=True,
     )
     server.register_introspection_functions()
@@ -106,11 +132,11 @@ def main():
     server.register_instance(controller)
 
     # Run the server's main loop
-    print('Serving XML-RPC on {host}:{port}'.format(host=HOST, port=PORT))
+    uprint('Serving XML-RPC on {host}:{port}'.format(host=HOST, port=PORT))
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt received, exiting.")
+        uprint('\nKeyboard interrupt received, exiting.')
         server.shutdown()
         controller.cleanup()
         sys.exit(0)

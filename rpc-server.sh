@@ -19,16 +19,28 @@
 
 PIDFILE=/var/run/rpcserver.pid
 PROG=/home/pi/workspace/gopygo/server.py
+LOGS=/var/log/rpcserver.log
 
 if [ -f "${PROG}" ]; then
   case "$1" in
     status)
+      if [ -f "${PIDFILE}" ]; then
+        PID=`cat $PIDFILE`
+        if ps -p $PID > /dev/null; then
+          TIME=$(ps -o etime= -p $PIDFILE)
+          echo "Running for $TIME"
+        else
+          echo "Server is not running, check logs at $LOGS"
+        fi
+      else
+        echo "Start server first to check the status"
+      fi
       ;;
     stop)
       echo "Stopping a server..."
       start-stop-daemon --stop --pid $PIDFILE
       # RETVAL="$?"
-	# [ "$RETVAL" = 2 ] && return 2
+      # [ "$RETVAL" = 2 ] && return 2
       ;;
     restart)
       echo "Restarting a server"
@@ -37,7 +49,7 @@ if [ -f "${PROG}" ]; then
       echo "Starting a server..."
       start-stop-daemon --start --chuid pi --background \
         --make-pidfile --pidfile $PIDFILE \
-        --exec /usr/bin/python3 $PROG
+        --exec /usr/bin/python3 $PROG  >$LOGS 2>&1
       ;;
     *)
       echo 'Usage: /etc/init.d/rpc-server {start|restart|stop|status}'
